@@ -1,0 +1,123 @@
+<div class="container-fluid py-4">
+  <!-- Encabezado y Botón/Enlace de Búsqueda -->
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h1 class="display-4 mb-3">Listado de Pokemon</h1>
+      <div class="d-flex justify-content-center gap-3">
+        <a routerLink="/search" class="btn btn-info">Ir a la Búsqueda de Pokémon</a>
+        <a routerLink="/add-pokemon" class="btn btn-success">Agregar Nuevo Pokémon</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Columna para el Listado de Tarjetas de Pokémon -->
+    <div class="col-lg-8 mb-4 mb-lg-0">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+        @for (pokemon of displayedPokemonList; track pokemon.id) {
+          <div class="col">
+            <div class="card h-100 shadow-sm border-0 text-center"
+                 [ngClass]="{'border-primary border-3': selectedPokemon?.id == pokemon.id}"
+                 style="cursor: pointer;"
+                 (click)="selectPokemon(pokemon)">
+              <div class="card-img-top bg-light p-2" style="min-height: 150px; display: flex; align-items: center; justify-content: center;">
+                <img [src]="pokemon.isCustom ? pokemon.sprites.front_default : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemon.id + '.png'"
+                     alt="{{ pokemon.name }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+              </div>
+              <div class="card-body">
+                <h6 class="card-subtitle text-muted mb-1">#{{ pokemon.id }}</h6>
+                <h5 class="card-title">{{ pokemon.name | titlecase }}</h5>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+              No se encontraron Pokémon.
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Paginación (Botones) -->
+      <div class="d-flex justify-content-center mt-4">
+        <button class="btn btn-primary me-2" (click)="prevPage()" [disabled]="currentPage === 1">
+          &lt; Atras
+        </button>
+        <button class="btn btn-primary" (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0">
+          Siguiente &gt;
+        </button>
+      </div>
+    </div>
+
+    <!-- Columna para la Sección de Detalle de Pokémon -->
+    <div class="col-lg-4">
+      <div class="card bg-info bg-opacity-10 shadow-sm border-0 p-3">
+        @if (selectedPokemon) {
+          <div class="card-img-top text-center bg-info bg-opacity-25 p-3 rounded mb-3">
+            <img [src]="selectedPokemon.isCustom ? selectedPokemon.sprites.front_default : selectedPokemon.sprites?.front_default || 'https://via.placeholder.com/150'"
+                 class="img-fluid rounded"
+                 alt="{{ selectedPokemon.name }}"
+                 style="max-width: 150px; height: auto;">
+          </div>
+          <div class="card-body text-center">
+            <h3 class="card-title text-purple mb-3">#{{ selectedPokemon.id }} {{ selectedPokemon.name | titlecase }}</h3>
+            <p class="card-text">
+              <strong>Types:</strong>
+              @if (selectedPokemon.isCustom) {
+                <span class="badge bg-secondary me-1">{{ selectedPokemon.type | titlecase }}</span>
+              } @else {
+                @for (type of selectedPokemon.types; track type.slot) {
+                  <span class="badge bg-secondary me-1">{{ type.type.name | titlecase }}</span>
+                } @empty {
+                  N/A
+                }
+              }
+            </p>
+            <p class="card-text"><strong>Peso:</strong> {{ selectedPokemon.isCustom ? selectedPokemon.weight : selectedPokemon.weight / 10 }} kg</p>
+            <p class="card-text"><strong>Sprites:</strong></p>
+            <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+              @if (selectedPokemon.isCustom) {
+                <img [src]="selectedPokemon.sprites.front_default" class="img-thumbnail rounded" alt="Custom Sprite" style="width: 60px; height: 60px;">
+              } @else {
+                @if (selectedPokemon.sprites?.front_default) {
+                  <img [src]="selectedPokemon.sprites.front_default" class="img-thumbnail rounded" alt="Front Default" style="width: 60px; height: 60px;">
+                }
+                @if (selectedPokemon.sprites?.back_default) {
+                  <img [src]="selectedPokemon.sprites.back_default" class="img-thumbnail rounded" alt="Back Default" style="width: 60px; height: 60px;">
+                }
+                @if (selectedPokemon.sprites?.front_shiny) {
+                  <img [src]="selectedPokemon.sprites.front_shiny" class="img-thumbnail rounded" alt="Front Shiny" style="width: 60px; height: 60px;">
+                }
+              }
+            </div>
+            <p class="card-text">
+              <strong>Movimientos:</strong>
+              @if (selectedPokemon.isCustom) {
+                @for (move of selectedPokemon.moves; track move) {
+                  <span class="badge bg-success me-1">{{ move | titlecase }}</span>
+                } @empty {
+                  N/A
+                }
+              } @else {
+                @for (move of selectedPokemon.moves; track move.move.name) {
+                  <span class="badge bg-success me-1">{{ move.move.name | titlecase }}</span>
+                } @empty {
+                  N/A
+                }
+              }
+            </p>
+          </div>
+        } @else {
+          <div class="card-img-top text-center bg-info bg-opacity-25 p-3 rounded mb-3">
+            <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="Pokémon Detalle">
+          </div>
+          <div class="card-body text-center">
+            <h3 class="card-title text-purple mb-3">Selecciona un Pokémon</h3>
+            <p class="card-text">Haz clic en una tarjeta para ver los detalles.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

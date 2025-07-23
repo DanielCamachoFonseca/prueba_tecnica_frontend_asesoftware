@@ -1,0 +1,94 @@
+<div class="container py-4">
+  <div class="row justify-content-center mb-4">
+    <div class="col-12 col-md-8 col-lg-6 text-center">
+      <h1 class="display-5 mb-3">Buscar Pokémon</h1>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Q</span>
+        <input type="text" class="form-control" placeholder="Escribe el nombre o ID del Pokémon..."
+               [formControl]="searchControl">
+      </div>
+      <a routerLink="/pokemon" class="btn btn-link mt-2">← Volver al Listado</a>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      @if (isLoading) {
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Buscando Pokémon...</p>
+        </div>
+      } @else if (searchError) {
+        <div class="alert alert-danger text-center" role="alert">
+          {{ searchError }}
+        </div>
+      } @else if (searchControl.value && pokemonResult) {
+        <!-- Tarjeta de detalle del Pokémon encontrado -->
+        <div class="card bg-info bg-opacity-10 shadow-sm border-0 p-3">
+          <div class="card-img-top text-center bg-info bg-opacity-25 p-3 rounded mb-3">
+            <!-- Imagen: Usar sprite personalizado o de la API -->
+            <img [src]="pokemonResult.isCustom ? pokemonResult.sprites.front_default : pokemonResult.sprites?.front_default || 'https://via.placeholder.com/150'"
+                 class="img-fluid rounded"
+                 alt="{{ pokemonResult.name }}"
+                 style="max-width: 150px; height: auto;">
+          </div>
+          <div class="card-body text-center">
+            <h3 class="card-title text-purple mb-3">#{{ pokemonResult.id }} {{ pokemonResult.name | titlecase }}</h3>
+            <p class="card-text">
+              <strong>Types:</strong>
+              @if (pokemonResult.isCustom) {
+                <span class="badge bg-secondary me-1">{{ pokemonResult.type | titlecase }}</span>
+              } @else {
+                @for (type of pokemonResult.types; track type.slot) {
+                  <span class="badge bg-secondary me-1">{{ type.type.name | titlecase }}</span>
+                } @empty {
+                  N/A
+                }
+              }
+            </p>
+            <p class="card-text"><strong>Peso:</strong> {{ pokemonResult.isCustom ? pokemonResult.weight : pokemonResult.weight / 10 }} kg</p>
+            <p class="card-text"><strong>Sprites:</strong></p>
+            <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+              <!-- Sprites: Mostrar según sea personalizado o de la API -->
+              @if (pokemonResult.isCustom) {
+                <img [src]="pokemonResult.sprites.front_default" class="img-thumbnail rounded" alt="Custom Sprite" style="width: 60px; height: 60px;">
+              } @else {
+                @if (pokemonResult.sprites?.front_default) {
+                  <img [src]="pokemonResult.sprites.front_default" class="img-thumbnail rounded" alt="Front Default" style="width: 60px; height: 60px;">
+                }
+                @if (pokemonResult.sprites?.back_default) {
+                  <img [src]="pokemonResult.sprites.back_default" class="img-thumbnail rounded" alt="Back Default" style="width: 60px; height: 60px;">
+                }
+                @if (pokemonResult.sprites?.front_shiny) {
+                  <img [src]="pokemonResult.sprites.front_shiny" class="img-thumbnail rounded" alt="Front Shiny" style="width: 60px; height: 60px;">
+                }
+              }
+            </div>
+            <p class="card-text">
+              <strong>Movimientos:</strong>
+              @if (pokemonResult.isCustom) {
+                @for (move of pokemonResult.moves; track move) {
+                  <span class="badge bg-success me-1">{{ move | titlecase }}</span>
+                } @empty {
+                  N/A
+                }
+              } @else {
+                @for (move of pokemonResult.moves; track move.move.name) {
+                  <span class="badge bg-success me-1">{{ move.move.name | titlecase }}</span>
+                } @empty {
+                  N/A
+                }
+              }
+            </p>
+          </div>
+        </div>
+      } @else if (searchControl.value === '') {
+        <div class="alert alert-info text-center" role="alert">
+          Empieza a escribir un nombre o ID de Pokémon para buscar.
+        </div>
+      }
+    </div>
+  </div>
+</div>

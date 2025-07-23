@@ -1,0 +1,94 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-7">
+      <div class="card shadow-lg border-0 rounded-lg mt-5">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h3 class="mb-0">Agregar Nuevo Pokémon</h3>
+        </div>
+        <div class="card-body p-4">
+          <form [formGroup]="addPokemonForm" (ngSubmit)="onSubmit()">
+
+            <!-- Campo Nombre -->
+            <div class="mb-3">
+              <label for="pokemonName" class="form-label">Nombre del Pokémon</label>
+              <input type="text" id="pokemonName" class="form-control" formControlName="name"
+                     [class.is-invalid]="addPokemonForm.get('name')?.invalid && addPokemonForm.get('name')?.touched">
+              @if (addPokemonForm.get('name')?.invalid && addPokemonForm.get('name')?.touched) {
+                <div class="invalid-feedback">
+                  El nombre es requerido.
+                </div>
+              }
+            </div>
+
+            <!-- Campo Tipo -->
+            <div class="mb-3">
+              <label for="pokemonType" class="form-label">Tipo (ej. Fire, Water)</label>
+              <input type="text" id="pokemonType" class="form-control" formControlName="type"
+                     [class.is-invalid]="addPokemonForm.get('type')?.invalid && addPokemonForm.get('type')?.touched">
+              @if (addPokemonForm.get('type')?.invalid && addPokemonForm.get('type')?.touched) {
+                <div class="invalid-feedback">
+                  El tipo es requerido.
+                </div>
+              }
+            </div>
+
+            <!-- Campo Peso -->
+            <div class="mb-3">
+              <label for="pokemonWeight" class="form-label">Peso (kg)</label>
+              <input type="number" id="pokemonWeight" class="form-control" formControlName="weight"
+                     [class.is-invalid]="addPokemonForm.get('weight')?.invalid && addPokemonForm.get('weight')?.touched">
+              @if (addPokemonForm.get('weight')?.invalid && addPokemonForm.get('weight')?.touched) {
+                <div class="invalid-feedback">
+                  El peso es requerido y debe ser un número positivo.
+                </div>
+              }
+            </div>
+
+            <!-- Campo URL del Sprite -->
+            <div class="mb-3">
+              <label for="pokemonSpriteUrl" class="form-label">URL del Sprite (imagen frontal)</label>
+              <input type="url" id="pokemonSpriteUrl" class="form-control" formControlName="spriteUrl"
+                     [class.is-invalid]="addPokemonForm.get('spriteUrl')?.invalid && addPokemonForm.get('spriteUrl')?.touched">
+              @if (addPokemonForm.get('spriteUrl')?.invalid && addPokemonForm.get('spriteUrl')?.touched) {
+                <div class="invalid-feedback">
+                  La URL del sprite es requerida y debe ser una URL válida.
+                </div>
+              }
+              @if (addPokemonForm.get('spriteUrl')?.valid && addPokemonForm.get('spriteUrl')?.value) {
+                <div class="mt-2 text-center">
+                  <img [src]="addPokemonForm.get('spriteUrl')?.value" alt="Vista previa del Sprite" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                </div>
+              }
+            </div>
+
+            <!-- Campo Movimientos (FormArray dinámico) -->
+            <div class="mb-3">
+              <label class="form-label d-block">Movimientos</label>
+              <div formArrayName="moves">
+                @for (moveControl of moves.controls; track i; let i = $index) {
+                  <div class="input-group mb-2">
+                    <input type="text" class="form-control" [formControlName]="i"
+                           [class.is-invalid]="moveControl.invalid && moveControl.touched">
+                    <button type="button" class="btn btn-outline-danger" (click)="removeMove(i)">X</button>
+                    @if (moveControl.invalid && moveControl.touched) {
+                      <div class="invalid-feedback d-block">
+                        El movimiento es requerido.
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="addMove()">+ Añadir Movimiento</button>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+              <button type="button" class="btn btn-secondary" (click)="goBackToList()">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar Pokémon</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
